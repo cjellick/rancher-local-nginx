@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 display_usage() {
-    echo -e "Usage:"
-    echo -e "deploy-ngnix desired_hostname docker_machine" 
-    #echo "  ip-of-vm:         IP of the VM where the nginx container will be deployed, ie: docker-machine ip <name of machine>"
+    echo "Usage:"
+    echo "deploy-ngnix desired_hostname docker_machine"
     echo "  desired-hostname: Hostname through which you want to access Rancher."
-    echo "  docker_machine:   Name of the docker-machine vm where the container will be deployed."
+    echo "  docker_machine:   Name of the docker machine where the container will be deployed."
 }
 
 if [ $# -lt 2 ]; then
@@ -31,4 +30,4 @@ docker run --rm --privileged -v /etc/hosts:/machine/etc/hosts cjellick/update-ho
 
 # Start nginx container
 docker rm -fv rancher-nginx 2>/dev/null
-docker run --name rancher-nginx -p 80:80 -v $(pwd)/conf/nginx.rancher.local.conf:/etc/nginx/nginx.conf:ro -d nginx
+docker $(docker-machine config $MACHINE) run --name rancher-nginx -p 80:80 -v $(pwd)/conf/nginx.rancher.local.conf:/etc/nginx/nginx.conf:ro -d nginx
