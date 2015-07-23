@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 HOSTNAME=$1
+USE_X_FORWARDED=$2
 
 mkdir -p conf
 
@@ -35,13 +36,25 @@ http {
     upstream rancher {
         server 10.0.2.2:8080;
     }
-
     server {
         listen 80;
         server_name proxy_server;
 
         location / {
+EOL
+
+if [ $USE_X_FORWARDED = 'true' ]; then
+    cat >>conf/nginx.rancher.local.conf <<EOL
+            proxy_set_header X-Forwarded-Proto \$scheme;
+            proxy_set_header X-Forwarded-Host $HOSTNAME;
+EOL
+else
+    cat >>conf/nginx.rancher.local.conf <<EOL
             proxy_set_header X-API-request-url \$scheme://$HOSTNAME\$request_uri;
+EOL
+fi
+
+cat >>conf/nginx.rancher.local.conf <<EOL
             proxy_pass http://rancher;
             proxy_http_version 1.1;
             proxy_set_header Upgrade \$http_upgrade;
