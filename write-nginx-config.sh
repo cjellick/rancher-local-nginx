@@ -46,7 +46,8 @@ EOL
 if [ $USE_X_FORWARDED = 'true' ]; then
     cat >>conf/nginx.rancher.local.conf <<EOL
             proxy_set_header X-Forwarded-Proto \$scheme;
-            proxy_set_header X-Forwarded-Host $HOSTNAME;
+            proxy_set_header X-Forwarded-Port \$server_port;
+            proxy_set_header Host $HOSTNAME;
 EOL
 else
     cat >>conf/nginx.rancher.local.conf <<EOL
